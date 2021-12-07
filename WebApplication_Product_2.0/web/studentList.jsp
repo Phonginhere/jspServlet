@@ -18,6 +18,10 @@
     </head>
     <body>
         <h1 style="text-align: center;"> Quản lí thông tin sinh viên!</h1>
+        <form method="get" action="student-list">
+            Search: <input type="text" name="studentf" >
+            <input type="submit" value="search">
+        </form>
         <div class="container">
             <table class="table table-hover hover-bordered">        
                 <tr>

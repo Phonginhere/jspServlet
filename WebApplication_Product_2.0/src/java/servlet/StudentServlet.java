@@ -77,13 +77,16 @@ public class StudentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        String nameSearch = request.getParameter("studentf");
         String id_delete = request.getParameter("id_delete");
+        
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
+            EntityManager em = factory.createEntityManager();
+            
         if (id_delete != null && !id_delete.isEmpty()) {
             int id = Integer.parseInt(id_delete);
 
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
-            EntityManager em = factory.createEntityManager();
+            
 
             Student std = em.find(Student.class, id);
 
@@ -95,15 +98,25 @@ public class StudentServlet extends HttpServlet {
         Student std = new Student(0);
         String id_edit = request.getParameter("id_edit");
         if (id_edit != null && !id_edit.isEmpty()) {
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
-            EntityManager em = factory.createEntityManager();
             int id = Integer.parseInt(id_edit);
             std = em.find(Student.class, id);
             request.setAttribute("std", std); // = Viewdata mvc
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/editStudent.jsp");
             dispatcher.forward(request, response);
         }
-
+        
+        if(nameSearch != null){
+             Query query = em.createNamedQuery("Student.findByFullName").setParameter("fullName", nameSearch);
+        List<Student> list = query.getResultList();
+        
+        for (Student s : list) {
+            System.out.println(s.getFullName());
+        }
+        request.setAttribute("display", list); // = Viewdata mvc
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/studentList.jsp");
+        dispatcher.forward(request, response);
+        }
+        
         processRequest(request, response);
 
     }
