@@ -74,10 +74,10 @@ public class StudentServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String id_delete = request.getParameter("id_delete");
         if (id_delete != null && !id_delete.isEmpty()) {
             int id = Integer.parseInt(id_delete);
@@ -91,10 +91,21 @@ public class StudentServlet extends HttpServlet {
             em.remove(std);
             em.getTransaction().commit();
         }
-        
-        
+
+        Student std = new Student(0);
+        String id_edit = request.getParameter("id_edit");
+        if (id_edit != null && !id_edit.isEmpty()) {
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
+            EntityManager em = factory.createEntityManager();
+            int id = Integer.parseInt(id_edit);
+            std = em.find(Student.class, id);
+            request.setAttribute("std", std); // = Viewdata mvc
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/editStudent.jsp");
+            dispatcher.forward(request, response);
+        }
+
         processRequest(request, response);
-        
+
     }
 
     /**
@@ -108,17 +119,29 @@ public class StudentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-         String name = request.getParameter("name");
+
+        String name = request.getParameter("name");
         int age = Integer.parseInt(request.getParameter("age"));
         String address = request.getParameter("address");
-        if (name != null && age > 0 && address != null) {
+
+        if (request.getParameter("id") != null) {
 
             EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
             EntityManager em = factory.createEntityManager();
+            int id = Integer.parseInt(request.getParameter("id"));
+            Student std = em.find(Student.class, id);
+
+            em.getTransaction().begin();
+            std.setFullName(name);
+            std.setAge(age);
+            std.setAddress(address);
+            em.getTransaction().commit();
+        }else{
+          EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
+            EntityManager em = factory.createEntityManager();
 
             Student std = new Student();
-            
+
             std.setFullName(name);
             std.setAge(age);
             std.setAddress(address);
@@ -127,25 +150,8 @@ public class StudentServlet extends HttpServlet {
             em.persist(std);
             em.getTransaction().commit();
         }
-        if(id > 0){
-             if (name != null && age > 0 && address != null) {
-
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory("WebApplication_Product_2.0PU");
-            EntityManager em = factory.createEntityManager();
-
-            Student std = new Student();
-            
-            std.setFullName(name);
-            std.setAge(age);
-            std.setAddress(address);
-
-            em.getTransaction().begin();
-            em.persist(std);
-            em.getTransaction().commit();
-        }
-       }
         processRequest(request, response);
-        
+
     }
 
     /**

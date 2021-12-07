@@ -19,8 +19,7 @@
     <body>
         <h1 style="text-align: center;"> Quản lí thông tin sinh viên!</h1>
         <div class="container">
-            <table class="table table-hover hover-bordered">
-               
+            <table class="table table-hover hover-bordered">        
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
